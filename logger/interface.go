@@ -1,6 +1,6 @@
 package logger
 
-import "xvlog/logdata"
+import "github.com/tizx/xvlog/logdata"
 
 type Logger interface {
 	Write()

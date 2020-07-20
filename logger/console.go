@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"xvlog/logdata"
+	"github.com/tizx/xvlog/logdata"
 )
 
 type console struct {}

@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
-	"xvlog/config"
-	"xvlog/logdata"
+	"github.com/tizx/xvlog/config"
+	"github.com/tizx/xvlog/logdata"
 )
 
 type File struct {

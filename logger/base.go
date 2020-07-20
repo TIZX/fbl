@@ -2,7 +2,7 @@ package logger
 
 import (
 	"fmt"
-	"xvlog/logdata"
+	"github.com/tizx/xvlog/logdata"
 )
 
 type baseLog struct {

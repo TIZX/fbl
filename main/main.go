@@ -2,7 +2,7 @@ package main
 
 import (
 	"time"
-	"xvlog"
+	"github.com/tizx/xvlog"
 )
 
 func main() {
