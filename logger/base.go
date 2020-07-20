@@ -35,6 +35,7 @@ func (b *baseLog) Write() {
 	for {
 		select {
 		case log := <- b.logChan:
+
 			b.handler.handle(log)
 		case <-b.exit:
 			return

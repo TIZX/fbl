@@ -2,9 +2,9 @@ package logger
 
 import (
 	"fmt"
+	"github.com/tizx/xvlog/logdata"
 	"os"
 	"path"
-	"github.com/tizx/xvlog/logdata"
 )
 
 type console struct {}

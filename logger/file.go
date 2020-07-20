@@ -2,13 +2,13 @@ package logger
 
 import (
 	"fmt"
+	"github.com/tizx/xvlog/config"
+	"github.com/tizx/xvlog/logdata"
 	"os"
 	"path"
 	"strconv"
 	"sync"
 	"time"
-	"github.com/tizx/xvlog/config"
-	"github.com/tizx/xvlog/logdata"
 )
 
 type File struct {

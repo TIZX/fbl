@@ -2,7 +2,7 @@ package xvlog
 
 import (
 	"github.com/tizx/xvlog/config"
-	"github.com/tizx/vlog/logdata"
+	"github.com/tizx/xvlog/logdata"
 	"github.com/tizx/xvlog/logger"
 )
 
@@ -28,6 +28,7 @@ func Debug(format string, a ...interface{}) {
 }
 func Info(format string, a ...interface{}) {
 	log := logdata.NewLog(logdata.INFO, format, a)
+
 	loggerValue.Receive(log)
 }
 func Warn(format string, a ...interface{}) {
