@@ -1,6 +1,6 @@
 package xvlog
 
-import "xvlog/config"
+import "github.com/tizx/xvlog/config"
 
 func SetLogger(v int)  {
 	config.Config.Logger = v

@@ -1,9 +1,9 @@
 package xvlog
 
 import (
-	"xvlog/config"
-	"xvlog/logdata"
-	"xvlog/logger"
+	"github.com/tizx/xvlog/config"
+	"github.com/tizx/vlog/logdata"
+	"github.com/tizx/xvlog/logger"
 )
 
 var loggerValue logger.Logger
