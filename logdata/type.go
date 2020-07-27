@@ -1,5 +1,8 @@
 package logdata
 
+
+
+//等级类型
 type Level uint8
 
 const (

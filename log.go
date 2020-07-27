@@ -8,38 +8,40 @@ import (
 
 var loggerValue logger.Logger
 
-func Logger() {
+type H = map[string]interface{}
+
+
+func Logger()  {
 	var handle logger.Handler
 	switch config.Config.Logger {
-		case 1:
-			handle = logger.NewFile()
-		default:
-			handle = logger.NewConsole()
+	case 1:
+		handle = logger.NewFile()
+	default:
+		handle = logger.NewConsole()
 	}
-
 	loggerValue = logger.NewLog(handle)
 
 	go loggerValue.Write()
 }
 
-func Debug(format string, a ...interface{}) {
-	log := logdata.NewLog(logdata.DEBUG, format, a)
+func Debug(field string, h map[string]interface{}) {
+	log := logdata.NewLog(logdata.DEBUG, field, h)
 	loggerValue.Receive(log)
 }
-func Info(format string, a ...interface{}) {
-	log := logdata.NewLog(logdata.INFO, format, a)
+func Info(field string, h map[string]interface{}) {
+	log := logdata.NewLog(logdata.INFO, field, h)
 
 	loggerValue.Receive(log)
 }
-func Warn(format string, a ...interface{}) {
-	log := logdata.NewLog(logdata.WARN, format, a)
+func Warn(field string, h map[string]interface{}) {
+	log := logdata.NewLog(logdata.WARN, field, h)
 	loggerValue.Receive(log)
 }
-func Error(format string, a ...interface{}) {
-	log := logdata.NewLog(logdata.ERROR, format, a)
+func Error(field string, h map[string]interface{}) {
+	log := logdata.NewLog(logdata.ERROR, field, h)
 	loggerValue.Receive(log)
 }
-func Fatal(format string, a ...interface{}) {
-	log := logdata.NewLog(logdata.FATAL, format, a)
+func Fatal(field string, h map[string]interface{}) {
+	log := logdata.NewLog(logdata.FATAL, field, h)
 	loggerValue.Receive(log)
 }

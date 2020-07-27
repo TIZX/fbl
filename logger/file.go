@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/tizx/xvlog/config"
 	"github.com/tizx/xvlog/logdata"
@@ -25,13 +26,13 @@ func NewFile() Handler {
 }
 
 func (f *File) handle(log *logdata.Log) {
-
+	data ,_ := json.Marshal(log.Data())
 	file := f.getFile(log.Time(), log.Level())
 
 	if file == nil {
 		return
 	}
-	str := fmt.Sprintf(log.Format(), log.A()...)
+	str := fmt.Sprint(log.Field(), "  ", string(data))
 	time := log.Time().Format("2006-01-02 15:04:05")
 	fmt.Fprintf(file,
 		"%s [%s] %s %s %d\n",
@@ -45,6 +46,7 @@ func (f *File) handle(log *logdata.Log) {
 
 // 获取一个文件
 func (f *File)getFile(time time.Time, level logdata.Level) *os.File {
+
 	ymd := time.Format("20060102")
 	if f.logDay != ymd || f.logFiles[level] == nil {
 		if f.logFiles[level] != nil {

@@ -10,7 +10,7 @@ type c struct {
 var Config c
 
 func init()  {
-	Config.Logger = 1
+	Config.Logger = 0
 	Config.LogPath = "log"
 	Config.BufferSize = 10000
 	Config.IsInstant = true
