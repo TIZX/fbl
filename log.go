@@ -6,42 +6,50 @@ import (
 	"github.com/tizx/xvlog/logger"
 )
 
-var loggerValue logger.Logger
+type log struct {
+	logger logger.Logger
+	config *config.Config
+}
 
-type H = map[string]interface{}
 
-
-func Logger()  {
-	var handle logger.Handler
-	switch config.Config.Logger {
-	case 1:
-		handle = logger.NewFile()
-	default:
-		handle = logger.NewConsole()
+func NewLogger(c *config.Config) *log {
+	if c == nil {
+		c = config.DefaultConfig
 	}
-	loggerValue = logger.NewLog(handle)
+	log := &log{
+		config: c,
+	}
 
-	go loggerValue.Write()
+	if log.config.Logger == 0 {
+		log.logger = logger.NewConsole()
+	}else{
+		log.logger = logger.NewBinLog()
+	}
+	go log.logger.Write() // 开启写goroutine
+	return log
 }
 
-func Debug(field string, h map[string]interface{}) {
+func (l *log)Debug(field string, h map[string]interface{}) {
 	log := logdata.NewLog(logdata.DEBUG, field, h)
-	loggerValue.Receive(log)
+	l.logger.Receive(log)
 }
-func Info(field string, h map[string]interface{}) {
+func (l *log)Info(field string, h map[string]interface{}) {
 	log := logdata.NewLog(logdata.INFO, field, h)
 
-	loggerValue.Receive(log)
+	l.logger.Receive(log)
 }
-func Warn(field string, h map[string]interface{}) {
+func (l *log)Warn(field string, h map[string]interface{}) {
 	log := logdata.NewLog(logdata.WARN, field, h)
-	loggerValue.Receive(log)
+
+	l.logger.Receive(log)
 }
-func Error(field string, h map[string]interface{}) {
+func (l *log)Error(field string, h map[string]interface{}) {
 	log := logdata.NewLog(logdata.ERROR, field, h)
-	loggerValue.Receive(log)
+
+	l.logger.Receive(log)
 }
-func Fatal(field string, h map[string]interface{}) {
+func (l *log)tyFatal(field string, h map[string]interface{}) {
 	log := logdata.NewLog(logdata.FATAL, field, h)
-	loggerValue.Receive(log)
+
+	l.logger.Receive(log)
 }
