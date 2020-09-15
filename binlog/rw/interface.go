@@ -10,7 +10,7 @@ type Write interface {
 type Read interface {
 	ReadGeneral(p []byte) (int, error)
 	ReadIndex(p []byte) (int, error)
-	ReadData(p []byte) (int,error)
+	ReadData(p []byte) (int, error)
 }
 
 type ReadWrite interface {

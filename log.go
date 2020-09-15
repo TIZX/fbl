@@ -3,53 +3,58 @@ package xvlog
 import (
 	"github.com/tizx/xvlog/config"
 	"github.com/tizx/xvlog/logdata"
-	"github.com/tizx/xvlog/logger"
 )
 
 type log struct {
-	logger logger.Logger
-	config *config.Config
+	logger Logger
+	config config.Config
 }
-
 
 func NewLogger(c *config.Config) *log {
 	if c == nil {
 		c = config.DefaultConfig
 	}
-	log := &log{
-		config: c,
+	logger := &log{
+		config: config.Config{},
 	}
 
-	if log.config.Logger == 0 {
-		log.logger = logger.NewConsole()
-	}else{
-		log.logger = logger.NewBinLog()
+	if c.Logger == 0 {
+		logger.logger = NewConsole()
+	} else {
+		logger.logger = NewBinLog()
 	}
-	go log.logger.Write() // 开启写goroutine
-	return log
+	go logger.logger.Write() // 开启写goroutine
+	return logger
 }
 
-func (l *log)Debug(field string, h map[string]interface{}) {
-	log := logdata.NewLog(logdata.DEBUG, field, h)
-	l.logger.Receive(log)
+func (l *log) WithFields(fields map[string]interface{}) *Builder {
+	return NewBuilder(l.logger).WithFields(fields)
 }
-func (l *log)Info(field string, h map[string]interface{}) {
-	log := logdata.NewLog(logdata.INFO, field, h)
 
-	l.logger.Receive(log)
+func (l *log) WithLevel(level logdata.Level) *Builder {
+	return NewBuilder(l.logger).WithLevel(level)
 }
-func (l *log)Warn(field string, h map[string]interface{}) {
-	log := logdata.NewLog(logdata.WARN, field, h)
 
-	l.logger.Receive(log)
+func (l *log) WithMessage(message string) *Builder {
+	return NewBuilder(l.logger).WithMessage(message)
 }
-func (l *log)Error(field string, h map[string]interface{}) {
-	log := logdata.NewLog(logdata.ERROR, field, h)
 
-	l.logger.Receive(log)
+func (l *log) Info(message string) {
+	NewBuilder(l.logger).Info(message)
 }
-func (l *log)tyFatal(field string, h map[string]interface{}) {
-	log := logdata.NewLog(logdata.FATAL, field, h)
 
-	l.logger.Receive(log)
+func (l *log) Debug(message string) {
+	NewBuilder(l.logger).Debug(message)
+}
+
+func (l *log) Warn(message string) {
+	NewBuilder(l.logger).Warn(message)
+}
+
+func (l *log) Error(message string) {
+	NewBuilder(l.logger).Error(message)
+}
+
+func (l *log) Fatal(message string) {
+	NewBuilder(l.logger).Fatal(message)
 }

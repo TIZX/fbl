@@ -1,15 +1,14 @@
 package main
 
 import (
-	"github.com/tizx/xvlog"
+	log "github.com/tizx/xvlog"
 	"github.com/tizx/xvlog/config"
 	_ "net/http/pprof"
-	"strconv"
 	"time"
 )
 
 func main() {
-	logger := xvlog.NewLogger(&config.Config{
+	logger := log.NewLogger(&config.Config{
 		Logger:     1,
 		LogPath:    "./log",
 		BufferSize: 4096,
@@ -28,8 +27,10 @@ func main() {
 	//select {
 	//
 	//}
-	for i:=0;i<100;i++{
-		logger.Error("error"+strconv.Itoa(i), xvlog.H{"value": "dsfasdfsdfsd", "go": "dsfdsafsdfsdfdsf"} )
+	for i := 0; i < 100; i++ {
+		logger.WithFields(log.Map{
+			"value": i,
+		}).Info("test info")
 	}
-	time.Sleep(15*time.Second)
+	time.Sleep(15 * time.Second)
 }

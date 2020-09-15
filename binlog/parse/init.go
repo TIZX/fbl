@@ -2,12 +2,12 @@ package parse
 
 import "reflect"
 
-var MapParse map[reflect.Kind]TypeParse
+var MapParse map[reflect.Kind]Decoder
 
 const us uint8 = 0x1E
 
-func init()  {
-	MapParse = make(map[reflect.Kind]TypeParse)
+func init() {
+	MapParse = make(map[reflect.Kind]Decoder)
 	MapParse[reflect.Bool] = Bool{}
 	MapParse[reflect.Int] = Int{}
 	MapParse[reflect.Int8] = Int8{}

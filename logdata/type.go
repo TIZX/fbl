@@ -1,9 +1,7 @@
 package logdata
 
-
-
 //等级类型
-type Level uint8
+type Level int8
 
 const (
 	DEBUG = iota

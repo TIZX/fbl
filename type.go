@@ -1,4 +1,3 @@
 package xvlog
 
-
-type H = map[string]interface{}
+type Map = map[string]interface{}
