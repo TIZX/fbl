@@ -2,55 +2,28 @@ package xvlog
 
 import (
 	"github.com/tizx/xvlog/binlog"
-	"github.com/tizx/xvlog/config"
 	"github.com/tizx/xvlog/logdata"
-	"sync"
 )
 
 // binLog Logger
 type binLog struct {
-	logIndex      uint64
-	processorChan []chan *logdata.Log
+	handle *binlog.Handle
 }
 
-func NewBinLog() *binLog {
+func NewBinLog() Processor {
 	b := &binLog{}
-	processorChan := make([]chan *logdata.Log, config.DefaultConfig.Processor)
-
-	for i := 0; i < config.DefaultConfig.Processor; i++ {
-		processorChan[i] = make(chan *logdata.Log)
+	var err error
+	b.handle, err = binlog.NewHandle()
+	if err != nil {
+		panic(err)
 	}
-	b.processorChan = processorChan
 	return b
 }
 
-func (b *binLog) Receive(log *logdata.Log) {
-	processorIndex := b.logIndex % uint64(config.DefaultConfig.Processor)
-	b.processorChan[processorIndex] <- log
-	b.logIndex++
+func (b *binLog)Process(log *logdata.Log)  {
+	b.handle.Parse(log)
 }
 
-func (b *binLog) Write() {
-	// WaitGroup 防止创建goroutine后i还没复制给index就进行了i++
-	var wait sync.WaitGroup
-	var close sync.Once
-	for i := 0; i < config.DefaultConfig.Processor; i++ {
-		wait.Add(1)
-		go func() {
-			index := i
-			wait.Done()
-			defer func() {
-				close.Do(func() {
-					binlog.Write.Flush()
-					binlog.Write.Close()
-				})
-			}()
-			for {
-				log := <-b.processorChan[index]
-				structure := binlog.NewStructure(log)
-				structure.Parse()
-			}
-		}()
-		wait.Wait()
-	}
+func (b *binLog)SyncAndClose()  {
+	b.handle.SyncAndClose()
 }

@@ -6,10 +6,10 @@ import (
 
 type Builder struct {
 	log    *logdata.Log
-	logger Logger
+	logger *logger
 }
 
-func NewBuilder(logger Logger) *Builder {
+func NewBuilder(logger *logger) *Builder {
 	return &Builder{
 		log:    logdata.NewLog(),
 		logger: logger,
@@ -34,33 +34,33 @@ func (b *Builder) WithMessage(message string) *Builder {
 func (b *Builder) Info(message string) {
 	b.WithLevel(logdata.INFO)
 	b.WithMessage(message)
-	b.logger.Receive(b.log)
+	b.logger.receive(b.log)
 }
 
 func (b *Builder) Debug(message string) {
 	b.WithLevel(logdata.DEBUG)
 	b.WithMessage(message)
-	b.logger.Receive(b.log)
+	b.logger.receive(b.log)
 }
 
 func (b *Builder) Warn(message string) {
 	b.WithLevel(logdata.WARN)
 	b.WithMessage(message)
-	b.logger.Receive(b.log)
+	b.logger.receive(b.log)
 }
 
 func (b *Builder) Error(message string) {
 	b.WithLevel(logdata.ERROR)
 	b.WithMessage(message)
-	b.logger.Receive(b.log)
+	b.logger.receive(b.log)
 }
 
 func (b *Builder) Fatal(message string) {
 	b.WithLevel(logdata.FATAL)
 	b.WithMessage(message)
-	b.logger.Receive(b.log)
+	b.logger.receive(b.log)
 }
 
 func (b *Builder) Send() {
-	b.logger.Receive(b.log)
+	b.logger.receive(b.log)
 }
