@@ -1,7 +1,7 @@
 package binlog
 
 import (
-	"encoding/binary"
+	"fmt"
 	"github.com/tizx/xvlog/binlog/parse"
 	"github.com/tizx/xvlog/config"
 	"github.com/tizx/xvlog/logdata"
@@ -43,17 +43,19 @@ func (h *Handle) Parse(log *logdata.Log) {
 
 	typeNameByte, dataTemp := parse.Encode(log.Fields)
 
+
 	general.TypeNameByte = string(typeNameByte)
 
 	generalID := h.file.generalMap.getGeneralID(general)
 
-	data := make([]byte, 12)
-	binary.BigEndian.PutUint32(data[4:8], uint32(log.Time.Second())) // 封装时间
-	binary.BigEndian.PutUint32(data[8:12], uint32(generalID))        // 封装ID
-	data = append(data, dataTemp...)
-	//
-	binary.BigEndian.PutUint32(data[0:4], uint32(len(data))) // 封装长度
-	h.file.dataWriteChan <- data                             // 写入写channel
+	data := &logData{}
+	data.dataByte = dataTemp
+	data.time = uint32(log.Time.Unix())
+	data.generalID = uint32(generalID)
+
+	dataByte := data.Encode()
+	fmt.Println(data)
+	h.file.dataWriteChan <- dataByte                             // 写入写channel
 }
 
 func (h *Handle)SyncAndClose()  {

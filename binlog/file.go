@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"path"
-	"sync"
 )
 
 type logFile struct {
@@ -15,8 +14,6 @@ type logFile struct {
 	file          *os.File
 	dataWriteChan chan []byte
 	size          int64 // 文件大小，所占字节数
-
-	bufLock            sync.Mutex
 	buf                *bufio.Writer
 	IsCloseSuccessChan chan bool //退出通道
 }

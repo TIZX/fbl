@@ -7,8 +7,6 @@ import (
 const us uint8 = 0x1E
 
 type general struct {
-	ID           uint32
-	Length       uint32
 	Level        int8   //日志等级
 	Message      string // 格式化字符串
 	TypeNameByte string
@@ -16,10 +14,10 @@ type general struct {
 	Line         int    // 打印行号
 }
 
-// 长度/ID/level/File/Line/Message/TypeNameByte
-func (g *general) Encode() []byte {
+// /level/File/Line/Message/TypeNameByte
+func (g *general) Encode(id uint32) []byte {
 	res := make([]byte, 8)
-	binary.BigEndian.PutUint32(res[4:8], uint32(g.ID))
+	binary.BigEndian.PutUint32(res[4:8], id)
 	res = append(res, uint8(g.Level))    // 封装level
 	res = append(res, []byte(g.File)...) // 封装文件路径
 	res = append(res, us)                // 添加分隔符
@@ -33,10 +31,9 @@ func (g *general) Encode() []byte {
 	return res
 }
 
-// 长度/ID/level/File/Line/Message/TypeNameByte
-func (g *general) Decode(data []byte) {
-	g.Length = binary.BigEndian.Uint32(data[0:4])
-	g.ID = binary.BigEndian.Uint32(data[4:8])
+// /level/File/Line/Message/TypeNameByte
+func (g *general) Decode(data []byte) uint32 {
+	ID := binary.BigEndian.Uint32(data[4:8])
 	g.Level = int8(data[8])
 	var i = 9
 	for i < len(data) {
@@ -59,4 +56,5 @@ func (g *general) Decode(data []byte) {
 	g.Message = string(data[i:j])
 	i = j + 1
 	g.TypeNameByte = string(data[i:])
+	return ID
 }

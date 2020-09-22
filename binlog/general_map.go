@@ -10,16 +10,16 @@ import (
 type generalMap struct {
 	cacheFile *os.File
 	cacheFileBuf *bufio.Writer
-	generalMap         map[general]int
+	generalMap         map[general]uint32
 	generalMapLock     sync.RWMutex
-	generalCounter     int        // general计数器-计算id
+	generalCounter     uint32        // general计数器-计算id
 	generalCounterLock sync.Mutex //计数器锁
 	length             int
 }
 
 func newGeneralMap(data []byte) *generalMap {
 	gMap := &generalMap{
-		generalMap: make(map[general]int),
+		generalMap: make(map[general]uint32),
 	}
 
 	var err error
@@ -36,26 +36,27 @@ func newGeneralMap(data []byte) *generalMap {
 		itemLen := binary.BigEndian.Uint32(data[i : i+4])
 		itemByte := data[i : i+int(itemLen)]
 		item := &general{}
-		item.Decode(itemByte)
-		//temp.Length = itemLen
+		id := item.Decode(itemByte)
 		i = i + int(itemLen)
-		gMap.generalMap[*item] = int(item.ID)
+		// 把id和长度重置为0
+		gMap.generalMap[*item] = id
+
 		gMap.counter()
 	}
 	return gMap
 }
 
-func (gMap *generalMap) putGeneral(g *general) int {
+func (gMap *generalMap) putGeneral(g *general) uint32 {
 	gMap.generalMapLock.Lock()
 	defer gMap.generalMapLock.Unlock()
 	ID := gMap.counter()
 	gMap.generalMap[*g] = ID
-	g.ID = uint32(ID)
-	gMap.cacheFileBuf.Write(g.Encode())
+
+	gMap.cacheFileBuf.Write(g.Encode(ID))
 	return ID
 }
 
-func (gMap *generalMap) getGeneralID(g *general) int {
+func (gMap *generalMap) getGeneralID(g *general) uint32 {
 	gMap.generalMapLock.RLock()
 	ID, ok := gMap.generalMap[*g]
 	gMap.generalMapLock.RUnlock()
@@ -65,7 +66,7 @@ func (gMap *generalMap) getGeneralID(g *general) int {
 	return gMap.putGeneral(g)
 }
 
-func (gMap *generalMap) counter() int {
+func (gMap *generalMap) counter() uint32 {
 	gMap.generalCounterLock.Lock()
 	defer gMap.generalCounterLock.Unlock()
 	gMap.generalCounter = gMap.generalCounter + 1
@@ -74,8 +75,8 @@ func (gMap *generalMap) counter() int {
 
 func (gMap *generalMap) toByte() []byte {
 	data := make([]byte, 0)
-	for general, _ := range gMap.generalMap {
-		data = append(data, general.Encode()...)
+	for general, id := range gMap.generalMap {
+		data = append(data, general.Encode(id)...)
 	}
 	return data
 }
