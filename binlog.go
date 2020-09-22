@@ -1,8 +1,8 @@
-package xvlog
+package fbl
 
 import (
-	"github.com/tizx/xvlog/binlog"
-	"github.com/tizx/xvlog/logdata"
+	"github.com/tizx/fbl/binlog"
+	"github.com/tizx/fbl/logdata"
 )
 
 // binLog Logger

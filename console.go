@@ -1,11 +1,11 @@
-package xvlog
+package fbl
 
 import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/tizx/xvlog/config"
-	"github.com/tizx/xvlog/logdata"
+	"github.com/tizx/fbl/config"
+	"github.com/tizx/fbl/logdata"
 	"os"
 	"sync"
 )

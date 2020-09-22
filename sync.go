@@ -1,4 +1,4 @@
-package xvlog
+package fbl
 
 // 退出前同步日志
 func (l *logger)SyncAndClose()  {

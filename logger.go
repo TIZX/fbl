@@ -1,9 +1,9 @@
-package xvlog
+package fbl
 
 import (
 	"fmt"
-	"github.com/tizx/xvlog/config"
-	"github.com/tizx/xvlog/logdata"
+	"github.com/tizx/fbl/config"
+	"github.com/tizx/fbl/logdata"
 	"sync"
 )
 

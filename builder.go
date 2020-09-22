@@ -1,7 +1,7 @@
-package xvlog
+package fbl
 
 import (
-	"github.com/tizx/xvlog/logdata"
+	"github.com/tizx/fbl/logdata"
 )
 
 type Builder struct {

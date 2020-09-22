@@ -1,8 +1,8 @@
 package main
 
 import (
-	log "github.com/tizx/xvlog"
-	"github.com/tizx/xvlog/config"
+	log "github.com/tizx/fbl"
+	"github.com/tizx/fbl/config"
 	_ "net/http/pprof"
 )
 

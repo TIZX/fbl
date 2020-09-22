@@ -1,6 +1,6 @@
-package xvlog
+package fbl
 
-import "github.com/tizx/xvlog/logdata"
+import "github.com/tizx/fbl/logdata"
 
 type Processor interface {
 	Process(log *logdata.Log)

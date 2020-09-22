@@ -2,9 +2,9 @@ package binlog
 
 import (
 	"fmt"
-	"github.com/tizx/xvlog/binlog/parse"
-	"github.com/tizx/xvlog/config"
-	"github.com/tizx/xvlog/logdata"
+	"github.com/tizx/fbl/binlog/parse"
+	"github.com/tizx/fbl/config"
+	"github.com/tizx/fbl/logdata"
 	"os"
 	"path"
 	"time"
@@ -22,7 +22,7 @@ func NewHandle() (*Handle, error) {
 	filePath := config.DefaultConfig.LogPath
 	_ = os.MkdirAll(filePath, os.ModeDir)
 	fileName := time.Now().Format("2006-01-02")
-	ext := ".xvlog"
+	ext := ".fbl"
 	var err error
 	handle.file, err = NewLogFile(path.Join(filePath, fileName+ext))
 	if err != nil {

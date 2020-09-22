@@ -1,4 +1,4 @@
-module github.com/tizx/xvlog
+module github.com/tizx/fbl
 
 go 1.14
 
