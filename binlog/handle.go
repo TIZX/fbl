@@ -1,40 +1,41 @@
 package binlog
 
 import (
-	"fmt"
+	"bufio"
+	"github.com/tizx/fbl/binlog/file"
+	"github.com/tizx/fbl/binlog/general"
 	"github.com/tizx/fbl/binlog/parse"
 	"github.com/tizx/fbl/config"
 	"github.com/tizx/fbl/logdata"
-	"os"
-	"path"
-	"time"
 )
 
 type Index uint32
 
 type Handle struct {
-	file *logFile
-	size int64 // 文件大小
+	dataBuf *bufio.Writer
+	receiver receiver
+	dataWriteChan      chan []byte
+	size     int64 // 文件大小
 }
 
 func NewHandle() (*Handle, error) {
 	handle := &Handle{}
-	filePath := config.DefaultConfig.LogPath
-	_ = os.MkdirAll(filePath, os.ModeDir)
-	fileName := time.Now().Format("2006-01-02")
-	ext := ".fbl"
 	var err error
-	handle.file, err = NewLogFile(path.Join(filePath, fileName+ext))
-	if err != nil {
-		return nil, err
+	if config.DefaultConfig.BinlogReceiver == config.LocalFile {
+		handle.receiver, err = file.NewLogFile()
+		if err != nil {
+			return nil, err
+		}
+		handle.dataBuf = bufio.NewWriter(handle.receiver)
 	}
-	go handle.file.startWrite()
-	return handle, err
+	handle.dataWriteChan = make(chan []byte, 0)
+	go handle.startWrite()
+	return handle, nil
 }
 
 // 解析日志
 func (h *Handle) Parse(log *logdata.Log) {
-	general := &general{
+	generalItem := &general.General{
 		Level:   log.Level,
 		Message: log.Message,
 		File:    log.File,
@@ -43,10 +44,9 @@ func (h *Handle) Parse(log *logdata.Log) {
 
 	typeNameByte, dataTemp := parse.Encode(log.Fields)
 
+	generalItem.TypeNameByte = string(typeNameByte)
 
-	general.TypeNameByte = string(typeNameByte)
-
-	generalID := h.file.generalMap.getGeneralID(general)
+	generalID := h.receiver.GetGeneralID(generalItem)
 
 	data := &logData{}
 	data.dataByte = dataTemp
@@ -54,11 +54,21 @@ func (h *Handle) Parse(log *logdata.Log) {
 	data.generalID = uint32(generalID)
 
 	dataByte := data.Encode()
-	fmt.Println(data)
-	h.file.dataWriteChan <- dataByte                             // 写入写channel
+
+	h.dataWriteChan <- dataByte // 写入写channel
 }
 
-func (h *Handle)SyncAndClose()  {
-	close(h.file.dataWriteChan) // 关闭data写chan
-	<- h.file.IsCloseSuccessChan //等待全部数据写入成功
+func (h *Handle) SyncAndClose() {
+	_ = h.dataBuf.Flush()
+	h.receiver.SyncAndClose()
+}
+
+func (h *Handle)startWrite()  {
+	for {
+		data, ok := <- h.dataWriteChan
+		if !ok {
+			break
+		}
+		h.dataBuf.Write(data)
+	}
 }

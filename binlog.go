@@ -20,10 +20,10 @@ func NewBinLog() Processor {
 	return b
 }
 
-func (b *binLog)Process(log *logdata.Log)  {
+func (b *binLog) Process(log *logdata.Log) {
 	b.handle.Parse(log)
 }
 
-func (b *binLog)SyncAndClose()  {
+func (b *binLog) SyncAndClose() {
 	b.handle.SyncAndClose()
 }

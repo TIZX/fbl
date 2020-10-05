@@ -33,6 +33,6 @@ func (c *console) Process(log *logdata.Log) {
 	c.bufferLock.Unlock()
 
 }
-func (c *console)SyncAndClose()  {
+func (c *console) SyncAndClose() {
 
 }

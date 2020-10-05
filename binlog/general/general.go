@@ -1,4 +1,4 @@
-package binlog
+package general
 
 import (
 	"encoding/binary"
@@ -6,7 +6,9 @@ import (
 
 const us uint8 = 0x1E
 
-type general struct {
+
+
+type General struct {
 	Level        int8   //日志等级
 	Message      string // 格式化字符串
 	TypeNameByte string
@@ -15,7 +17,7 @@ type general struct {
 }
 
 // /level/File/Line/Message/TypeNameByte
-func (g *general) Encode(id uint32) []byte {
+func (g *General) Encode(id uint32) []byte {
 	res := make([]byte, 8)
 	binary.BigEndian.PutUint32(res[4:8], id)
 	res = append(res, uint8(g.Level))    // 封装level
@@ -32,7 +34,7 @@ func (g *general) Encode(id uint32) []byte {
 }
 
 // /level/File/Line/Message/TypeNameByte
-func (g *general) Decode(data []byte) uint32 {
+func (g *General) Decode(data []byte) uint32 {
 	ID := binary.BigEndian.Uint32(data[4:8])
 	g.Level = int8(data[8])
 	var i = 9

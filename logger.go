@@ -10,9 +10,9 @@ import (
 type logger struct {
 	logIndex      uint64
 	processorChan []chan *logdata.Log // 每一个processor的chan
-	processing sync.WaitGroup // 处理中的
-	processor Processor		// 处理器
-	config *config.Config
+	processing    sync.WaitGroup      // 处理中的
+	processor     Processor           // 处理器
+	config        *config.Config
 }
 
 func NewLogger(c *config.Config) *logger {
@@ -21,9 +21,9 @@ func NewLogger(c *config.Config) *logger {
 	}
 	logger := &logger{
 		config: c,
-		processorChan: func()[]chan *logdata.Log {
+		processorChan: func() []chan *logdata.Log {
 			var processorChan = make([]chan *logdata.Log, c.ProcessorNumber)
-			for i:=0;i<c.ProcessorNumber;i++{
+			for i := 0; i < c.ProcessorNumber; i++ {
 				processorChan[i] = make(chan *logdata.Log)
 			}
 			return processorChan
@@ -34,24 +34,24 @@ func NewLogger(c *config.Config) *logger {
 	} else {
 		logger.processor = NewBinLog()
 	}
-	logger.write() // 开启写goroutine
+	logger.startProcessor() // 开启写goroutine
 
 	return logger
 }
 
 func (l *logger) receive(log *logdata.Log) {
 	processorIndex := l.logIndex % uint64(l.config.ProcessorNumber)
+
 	l.processorChan[processorIndex] <- log
 	l.logIndex++
 }
-
-
-func (l *logger) write() {
+// 开启处理goroutine
+func (l *logger) startProcessor() {
 	l.processing.Add(l.config.ProcessorNumber)
 	for i := 0; i < l.config.ProcessorNumber; i++ {
 		go func(index int) {
 			for {
-				log, ok := <- l.processorChan[index]
+				log, ok := <-l.processorChan[index]
 				if !ok {
 					break // 退出循环
 				}
@@ -66,8 +66,6 @@ func (l *logger) write() {
 		}(i)
 	}
 }
-
-
 
 func (l *logger) WithFields(fields map[string]interface{}) *Builder {
 	return NewBuilder(l).WithFields(fields)
@@ -100,4 +98,3 @@ func (l *logger) Error(message string) {
 func (l *logger) Fatal(message string) {
 	NewBuilder(l).Fatal(message)
 }
-
